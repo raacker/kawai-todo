@@ -33,6 +33,7 @@ export default class App extends React.Component {
 						placeholderTextColor={'#999'}
 						returnKeyType={'done'}
                         autoCorrect={false}
+                        onEndEditing={this._addToDo}
                         onSubmitEditing={this._addTodo}
 					/>
 					<ScrollView contentContainerStyle={styles.todo} >
@@ -58,21 +59,26 @@ export default class App extends React.Component {
     _addToDo = () => {
         const { newToDo } = this.state;
         if(newToDo !== '') {
-            this.setState({
-                newToDo: ''
-            });
             this.setState((prevState) => {
                 const ID = uuidv1();
-                
+                const newToDoObject = {
+                    [ID]: {
+                        id: ID,
+                        isCompleted: false,
+                        text: prevState.newToDo,
+                        createdAt: Date.now(),
+                    },
+                }
+                const newState = {
+                    ...prevState,
+                    newToDo: '',
+                    toDos: {
+                        ...prevState.toDos,
+                        ...newToDoObject,
+                    }
+                };
+                return { ...newState };
             });
-            const toDo = {
-                1234: {
-                    id: 1234,
-                    text: 'buy something',
-                    isCompleted: false,
-                    date: 12312423,
-                },
-            };
         }
     }
 }
