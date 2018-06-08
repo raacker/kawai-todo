@@ -1,24 +1,47 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import PropTypes from "prop-types";
 
 const { height, width } = Dimensions.get('window');
 
 export default class ToDo extends Component {
-	state = {
-		isEditing: false,
-        isCompleted: false,
-	};
+    constructor (props) {
+        super(props);
+        this.state = {
+            isEditing: false,
+            isCompleted: false,
+        };
+    }
 	render() {
-		const { isEditing, isCompleted } = this.state;
+        const { isEditing, isCompleted } = this.state;
+        console.log(this.state);
+        const { text } = this.props;
+        console.log('hello');
 		return (
 			<View style={styles.container}>
                 <View style={styles.column}>
                     <TouchableOpacity onPress={this._toggleComplete}>
                         <View style={[styles.circle, isCompleted ? styles.completedCircle : styles.uncompletedCircle]} />
                     </TouchableOpacity>
-                    <Text style={[styles.text, isCompleted ? styles.completedText : styles.uncompletedText]}>
-                        Hello I'm to do
-                    </Text>
+                    { isEditing ? (
+                        <TextInput
+                            style={[
+                                styles.text,
+                                styles.input,
+                                isCompleted ? styles.completedText : styles.uncompletedText
+                            ]}
+                            value={toDoValue}
+                            multiline={true}
+                            onChangeText={this._controlInput}
+                            returnKeyType={'done'}
+                            onBlur={this._endEditing}
+                            underlineColorAndroid={'transparent'}
+                        />
+                    ) :
+                        <Text style={[styles.text, isCompleted ? styles.completedText : styles.uncompletedText]}>
+                            {text}
+                        </Text>
+                    }
                 </View>
                 {isCompleted ?
                     null
@@ -68,6 +91,12 @@ export default class ToDo extends Component {
             isEditing: false,
         });
     }
+    
+    _controlInput = (text) => {
+        this.setState({
+            toDoValue: text,
+        });
+    }
 }
 
 const styles = StyleSheet.create({
@@ -83,7 +112,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         width: width / 2,
-        justifyContent: 'space-between',
     },
 	circle: {
 		width: 30,
