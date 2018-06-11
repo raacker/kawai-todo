@@ -10,6 +10,7 @@ export default class ToDo extends Component {
         isCompleted: PropTypes.bool.isRequired,
         deleteToDo: PropTypes.func.isRequired,
         id: PropTypes.string.isRequired,
+        toggleToDo: PropTypes.func.isRequired,
     }
     constructor (props) {
         super(props);
@@ -77,11 +78,8 @@ export default class ToDo extends Component {
 	}
 
 	_toggleComplete = () => {
-		this.setState(prevState => {
-			return {
-				isCompleted: !prevState.isCompleted,
-			};
-		});
+        const { isCompleted, toggleToDo, id } = this.props;
+        toggleToDo(id);
     };
     
     _startEditing = () => {

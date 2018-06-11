@@ -8,18 +8,18 @@ const { height, width } = Dimensions.get('window');
 
 export default class App extends React.Component {
 	state = {
-        newToDo: '',
-        loadedToDo: false,
-        toDos: {},
-    };
-    componentDidMount() {
-        this._loadToDo();
-    }
+		newToDo: '',
+		loadedToDo: false,
+		toDos: {},
+	};
+	componentDidMount() {
+		this._loadToDo();
+	}
 	render() {
-        const { newToDo, loadedToDo, toDos } = this.state;
-        if (!loadedToDo) {
-            return (<AppLoading />);
-        }
+		const { newToDo, loadedToDo, toDos } = this.state;
+		if (!loadedToDo) {
+			return <AppLoading />;
+		}
 		return (
 			<View style={styles.container}>
 				<StatusBar barStyle="light-content" />
@@ -32,12 +32,21 @@ export default class App extends React.Component {
 						onChangeText={this._controlleNewToDo}
 						placeholderTextColor={'#999'}
 						returnKeyType={'done'}
-                        autoCorrect={false}
-                        onEndEditing={this._addToDo}
-                        onSubmitEditing={this._addTodo}
+						autoCorrect={false}
+						onEndEditing={this._addToDo}
+						onSubmitEditing={this._addTodo}
 					/>
-					<ScrollView contentContainerStyle={styles.todo} >
-                        {Object.values(toDos).map((toDo) => (<ToDo key={toDo.id} id={toDo.id} text={toDo.text} isCompleted={false} deleteToDo={this._deleteToDo} />))}
+					<ScrollView contentContainerStyle={styles.todo}>
+						{Object.values(toDos).map(toDo => (
+							<ToDo
+								key={toDo.id}
+								id={toDo.id}
+								text={toDo.text}
+								isCompleted={toDo.isCompleted}
+                                deleteToDo={this._deleteToDo}
+                                toggleToDo={this._toggleToDo}
+							/>
+						))}
 					</ScrollView>
 				</View>
 			</View>
@@ -48,51 +57,67 @@ export default class App extends React.Component {
 		this.setState({
 			newToDo: text,
 		});
-    };
-    
-    _loadToDo = () => {
-        this.setState({
-            loadedToDo: true,
-        });
-    }
+	};
 
-    _addToDo = () => {
-        const { newToDo } = this.state;
-        if(newToDo !== '') {
-            this.setState((prevState) => {
-                const ID = uuidv1();
-                const newToDoObject = {
-                    [ID]: {
-                        id: ID,
-                        isCompleted: false,
-                        text: prevState.newToDo,
-                        createdAt: Date.now(),
-                    },
-                }
-                const newState = {
-                    ...prevState,
-                    newToDo: '',
-                    toDos: {
-                        ...prevState.toDos,
-                        ...newToDoObject,
-                    }
-                };
-                return { ...newState };
-            });
-        }
-    }
+	_loadToDo = () => {
+		this.setState({
+			loadedToDo: true,
+		});
+	};
 
-    _deleteToDo = (id) => {
-        this.setState(prevState => {
-            const toDos = prevState.toDos;
-            delete toDos[id];
-            const newState = {
-                ...prevState,
-                ...toDos,
-            };
-            return newState;
-        });
-    }
+	_addToDo = () => {
+		const { newToDo } = this.state;
+		if (newToDo !== '') {
+			this.setState(prevState => {
+				const ID = uuidv1();
+				const newToDoObject = {
+					[ID]: {
+						id: ID,
+						isCompleted: false,
+						text: prevState.newToDo,
+						createdAt: Date.now(),
+					},
+				};
+				const newState = {
+					...prevState,
+					newToDo: '',
+					toDos: {
+						...prevState.toDos,
+						...newToDoObject,
+					},
+				};
+				return { ...newState };
+			});
+		}
+	};
+
+	_deleteToDo = id => {
+		this.setState(prevState => {
+			const toDos = prevState.toDos;
+			delete toDos[id];
+			const newState = {
+				...prevState,
+				...toDos,
+			};
+			return newState;
+		});
+	};
+
+	_toggleToDo = id => {
+		this.setState(prevState => {
+			const newState = {
+				...prevState,
+				toDos: {
+					...prevState.toDos,
+					[id]: {
+						...prevState.toDos[id],
+						isCompleted: !prevState.toDos[id].isCompleted,
+					},
+				},
+			};
+			return { ...newState };
+		});
+	};
 }
 
 const styles = StyleSheet.create({
@@ -134,8 +159,8 @@ const styles = StyleSheet.create({
 		borderBottomColor: '#bbb',
 		borderBottomWidth: 1,
 		fontSize: 25,
-    },
-    todo: {
-        alignItems: 'center',
-    },
+	},
+	todo: {
+		alignItems: 'center',
+	},
 });
