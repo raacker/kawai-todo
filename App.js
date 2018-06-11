@@ -45,6 +45,7 @@ export default class App extends React.Component {
 								isCompleted={toDo.isCompleted}
                                 deleteToDo={this._deleteToDo}
                                 toggleToDo={this._toggleToDo}
+                                updateToDo={this._updateToDo}
 							/>
 						))}
 					</ScrollView>
@@ -53,7 +54,7 @@ export default class App extends React.Component {
 		);
 	}
 
-	_controlleNewToDo = text => {
+	_controlleNewToDo = (text) => {
 		this.setState({
 			newToDo: text,
 		});
@@ -91,7 +92,7 @@ export default class App extends React.Component {
 		}
 	};
 
-	_deleteToDo = id => {
+	_deleteToDo = (id) => {
 		this.setState(prevState => {
 			const toDos = prevState.toDos;
 			delete toDos[id];
@@ -103,7 +104,7 @@ export default class App extends React.Component {
 		});
 	};
 
-	_toggleToDo = id => {
+	_toggleToDo = (id) => {
 		this.setState(prevState => {
 			const newState = {
 				...prevState,
@@ -114,10 +115,26 @@ export default class App extends React.Component {
 						isCompleted: !prevState.toDos[id].isCompleted,
 					},
 				},
+			}; 
+			return { ...newState };
+		});
+    };
+    
+    _updateToDo = (id, text) => {
+        this.setState(prevState => {
+			const newState = {
+				...prevState,
+				toDos: {
+					...prevState.toDos,
+					[id]: {
+						...prevState.toDos[id],
+						text,
+					},
+				},
 			};
 			return { ...newState };
 		});
-	};
+    }
 }
 
 const styles = StyleSheet.create({
