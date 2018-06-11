@@ -5,18 +5,22 @@ import PropTypes from "prop-types";
 const { height, width } = Dimensions.get('window');
 
 export default class ToDo extends Component {
+    static propTypes = {
+        text: PropTypes.string.isRequired,
+        isCompleted: PropTypes.bool.isRequired,
+        deleteToDo: PropTypes.func.isRequired,
+        id: PropTypes.string.isRequired,
+    }
     constructor (props) {
         super(props);
         this.state = {
             isEditing: false,
-            isCompleted: false,
+            toDoValue: props.text,
         };
     }
 	render() {
-        const { isEditing, isCompleted } = this.state;
-        console.log(this.state);
-        const { text } = this.props;
-        console.log('hello');
+        const { isEditing, toDoValue } = this.state;
+        const { text, isCompleted, deleteToDo, id } = this.props;
 		return (
 			<View style={styles.container}>
                 <View style={styles.column}>
@@ -61,7 +65,7 @@ export default class ToDo extends Component {
                                 <Text style={styles.actionText}>✏️</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => { deleteToDo(id) }}>
                             <View style={styles.actionContainier}>
                                 <Text style={styles.actionText}>❎</Text>
                             </View>
@@ -81,8 +85,10 @@ export default class ToDo extends Component {
     };
     
     _startEditing = () => {
+        const { text } = this.props;
         this.setState({
             isEditing: true,
+            toDoValue: text,
         });
     }
 
