@@ -38,7 +38,7 @@ export default class ToDo extends Component {
                             ]}
                             value={toDoValue}
                             multiline={true}
-                            onChangeText={this._controlInput}
+                            onChangeText={this._controllInput}
                             returnKeyType={'done'}
                             onBlur={this._endEditing}
                             underlineColorAndroid={'transparent'}
@@ -62,12 +62,18 @@ export default class ToDo extends Component {
                     </View>
                     : 
                     <View style={styles.actions}>
-                        <TouchableOpacity onPressOut={this._startEditing}>
+                        <TouchableOpacity onPressOut={(event) => {
+                            event.stopPropagation();
+                            this._startEditing();
+                        }}>
                             <View style={styles.actionContainier}>
                                 <Text style={styles.actionText}>✏️</Text>
                             </View>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => { deleteToDo(id) }}>
+                        <TouchableOpacity onPress={(event) => {
+                            event.stopPropagation();
+                            deleteToDo(id); 
+                        }}>
                             <View style={styles.actionContainier}>
                                 <Text style={styles.actionText}>❎</Text>
                             </View>
@@ -78,12 +84,14 @@ export default class ToDo extends Component {
 		);
 	}
 
-	_toggleComplete = () => {
+	_toggleComplete = (event) => {
+        event.stopPropagation();
         const { isCompleted, toggleToDo, id } = this.props;
         toggleToDo(id);
     };
     
-    _startEditing = () => {
+    _startEditing = (event) => {
+        event.stopPropagation();
         const { text } = this.props;
         this.setState({
             isEditing: true,
@@ -91,7 +99,8 @@ export default class ToDo extends Component {
         });
     }
 
-    _endEditing = () => {
+    _endEditing = (event) => {
+        event.stopPropagation();
         const { toDoValue } = this.state;
         const { id, updateToDo } = this.props;
         updateToDo(id, toDoValue);
@@ -100,7 +109,7 @@ export default class ToDo extends Component {
         });
     }
     
-    _controlInput = (text) => {
+    _controllInput = (text) => {
         this.setState({
             toDoValue: text,
         });
