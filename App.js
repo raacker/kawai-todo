@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar, TextInput, Platform, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, TextInput, Platform, ScrollView, Dimensions, AsyncStorage } from 'react-native';
 import { AppLoading } from 'expo';
 import ToDo from './ToDo';
 import uuidv1 from 'uuid/v1';
@@ -60,9 +60,15 @@ export default class App extends React.Component {
 		});
 	};
 
-	_loadToDo = () => {
+	_loadToDo = async () => {
+        try {
+            const getToDos = await AsyncStorage.getItem('toDos');
+        } catch (err) {
+            console.log(err);
+        }
 		this.setState({
-			loadedToDo: true,
+            loadedToDo: true,
+            toDos: JSON.parse(getToDos),
 		});
 	};
 
@@ -87,6 +93,7 @@ export default class App extends React.Component {
 						...newToDoObject,
 					},
 				};
+                this._saveToDos(newState.toDos);
 				return { ...newState };
 			});
 		}
@@ -100,6 +107,7 @@ export default class App extends React.Component {
 				...prevState,
 				...toDos,
 			};
+            this._saveToDos(newState.toDos);
 			return newState;
 		});
 	};
@@ -115,7 +123,8 @@ export default class App extends React.Component {
 						isCompleted: !prevState.toDos[id].isCompleted,
 					},
 				},
-			}; 
+			};
+            this._saveToDos(newState.toDos);
 			return { ...newState };
 		});
     };
@@ -129,11 +138,20 @@ export default class App extends React.Component {
 					[id]: {
 						...prevState.toDos[id],
 						text,
-					},
+					},e
 				},
-			};
+            };
+            this._saveToDos(newState.toDos);
 			return { ...newState };
 		});
+    }
+
+    _saveToDos = async (newToDos) => {
+        try {
+            const saveToDos = await AsyncStorage.setItem('toDos', JSON.stringify(newToDos));
+        } catch (err) {
+            console.log(err);
+        }
     }
 }
 
